@@ -39,8 +39,7 @@ export default class DndController {
           }
         }
 
-        const target =
-          event.target.parentElement.querySelector('.new-tile-form');
+        const target = event.target.parentElement.querySelector('.new-tile-form');
         target.classList.add('active');
         target.scrollIntoView(false);
       });
@@ -59,19 +58,17 @@ export default class DndController {
       });
     });
 
-    this.dndUi.forms.forEach((item) =>
-      item.addEventListener('submit', (event) => {
-        event.preventDefault();
+    this.dndUi.forms.forEach((item) => item.addEventListener('submit', (event) => {
+      event.preventDefault();
 
-        const input = [...item.elements][0];
-        input.focus();
-        const tilesCol = item.closest('.tiles-col');
-        const column = tilesCol.children[1];
-        DndUi.createTile(column, input.value);
-        item.reset();
-        item.classList.remove('active');
-      }),
-    );
+      const input = [...item.elements][0];
+      input.focus();
+      const tilesCol = item.closest('.tiles-col');
+      const column = tilesCol.children[1];
+      DndUi.createTile(column, input.value);
+      item.reset();
+      item.classList.remove('active');
+    }));
     this.dndUi.tilesContainerEl.addEventListener('mouseover', (event) => {
       event.preventDefault();
 
@@ -95,12 +92,12 @@ export default class DndController {
       const currentEl = event.relatedTarget;
       if (
         !(
-          previousEl.classList.contains('tile') &&
-          currentEl.classList.contains('input-text')
-        ) &&
-        !(
-          previousEl.classList.contains('tile') &&
-          currentEl.classList.contains('delete-btn')
+          previousEl.classList.contains('tile')
+          && currentEl.classList.contains('input-text')
+        )
+        && !(
+          previousEl.classList.contains('tile')
+          && currentEl.classList.contains('delete-btn')
         )
       ) {
         const tileEl = event.target;
@@ -218,12 +215,11 @@ export default class DndController {
     const targetTile = event.target.closest('.tile');
     if (!targetTile) {
       return;
-    } else {
-      targetTile.parentNode.insertBefore(
-        this.emptyEl,
-        targetTile.nextElementSibling,
-      );
     }
+    targetTile.parentNode.insertBefore(
+      this.emptyEl,
+      targetTile.nextElementSibling,
+    );
 
     let newX = event.clientX - this.shiftX;
     let newY = event.clientY - this.shiftY;
@@ -255,8 +251,8 @@ export default class DndController {
 
     if (newX < 0) newX = 0;
     if (
-      newX >
-      document.documentElement.clientWidth - this.cloneEl.offsetWidth
+      newX
+      > document.documentElement.clientWidth - this.cloneEl.offsetWidth
     ) {
       newX = document.documentElement.clientWidth - this.cloneEl.offsetWidth;
     }

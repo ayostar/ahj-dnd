@@ -182,7 +182,24 @@ body {
   pointer-events: none;
 }
 
-.empty-tile {
-  background: none;
+/* .empty-tile {
+  background: grey;
   position: relative;
+} */
+
+.container {
+  background-color: #333;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.draggable {
+  padding: 1rem;
+  background: white;
+  border: 1px solid black;
+  cursor: grabbing;
+}
+
+.dragover {
+  opacity: 0.5;
 }

@@ -5,11 +5,6 @@ export default class DndController {
   constructor(dndUi, stateService) {
     this.dndUi = dndUi;
     this.stateService = stateService;
-    this.shiftX = null;
-    this.shiftY = null;
-    this.dragEl = null;
-    this.cloneEl = null;
-    this.emptyEl = null;
     this.toDo = null;
     this.inProgress = null;
     this.done = null;
@@ -39,7 +34,8 @@ export default class DndController {
           }
         }
 
-        const target = event.target.parentElement.querySelector('.new-tile-form');
+        const target =
+          event.target.parentElement.querySelector('.new-tile-form');
         target.classList.add('active');
         target.scrollIntoView(false);
       });
@@ -58,17 +54,20 @@ export default class DndController {
       });
     });
 
-    this.dndUi.forms.forEach((item) => item.addEventListener('submit', (event) => {
-      event.preventDefault();
+    this.dndUi.forms.forEach((item) =>
+      item.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-      const input = [...item.elements][0];
-      input.focus();
-      const tilesCol = item.closest('.tiles-col');
-      const column = tilesCol.children[1];
-      DndUi.createTile(column, input.value);
-      item.reset();
-      item.classList.remove('active');
-    }));
+        const input = [...item.elements][0];
+        input.focus();
+        const tilesCol = item.closest('.tiles-col');
+        const column = tilesCol.children[1];
+        DndUi.createTile(column, input.value);
+        item.reset();
+        item.classList.remove('active');
+      }),
+    );
+
     this.dndUi.tilesContainerEl.addEventListener('mouseover', (event) => {
       event.preventDefault();
 
@@ -92,12 +91,12 @@ export default class DndController {
       const currentEl = event.relatedTarget;
       if (
         !(
-          previousEl.classList.contains('tile')
-          && currentEl.classList.contains('input-text')
-        )
-        && !(
-          previousEl.classList.contains('tile')
-          && currentEl.classList.contains('delete-btn')
+          previousEl.classList.contains('tile') &&
+          currentEl.classList.contains('input-text')
+        ) &&
+        !(
+          previousEl.classList.contains('tile') &&
+          currentEl.classList.contains('delete-btn')
         )
       ) {
         const tileEl = event.target;
@@ -108,22 +107,105 @@ export default class DndController {
 
     this.dndUi.tilesContainerEl.addEventListener('mousedown', (event) => {
       const targetTile = event.target;
+      console.log(event);
 
-      if (targetTile.closest('.tile')) {
-        this.startDrag(event);
-      }
+      // if (targetTile.closest('.tile')) {
+      //   this.startDrag(event);
+      // }
 
       if (targetTile.closest('.delete-btn')) {
         DndUi.deleteTile(targetTile);
       }
     });
 
-    document.addEventListener('mousemove', (event) => {
-      this.moveAt(event);
+    this.startDrag();
+  }
+  //// ================================================================================= ////
+  startDrag() {
+    // работающий код
+    this.draggables = document.querySelectorAll('.draggable');
+    this.container = document.querySelectorAll('.container');
+    this.draggables.forEach((draggable) => {
+      draggable.addEventListener('dragstart', () => {
+        draggable.classList.add('dragging');
+      });
     });
-    document.addEventListener('mouseup', (event) => {
-      this.finishDrag(event);
+
+    this.draggables.forEach((draggable) => {
+      draggable.addEventListener('dragend', () => {
+        draggable.classList.remove('dragging');
+      });
     });
+
+    this.container.forEach((container) => {
+      container.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        const afterElement = this.getDragAfterElement(container, event.clientY);
+        const draggable = document.querySelector('.dragging');
+        if (afterElement == null) {
+          container.appendChild(draggable);
+        } else {
+          container.insertBefore(draggable, afterElement);
+        }
+      });
+    });
+
+    // не могу получить карточки и поэтому код не работает
+    this.tiles = document.querySelectorAll('.tiles');
+    this.tile = document.getElementsByClassName('tile');
+    console.log(this.tiles);
+    console.log(this.tile);
+
+    // for (let tile of this.tile) {
+    //   console.log(tile);
+    // }
+
+    this.tilesColumns = document.querySelectorAll('.tiles-col');
+
+    this.tiles.forEach((tile) => {
+      tile.addEventListener('dragstart', () => {
+        tile.classList.add('dragging');
+      });
+      tile.addEventListener('dragend', () => {
+        tile.classList.remove('dragging');
+      });
+    });
+
+    this.tilesColumns.forEach((tileColumn) => {
+      tileColumn.addEventListener('dragover', (event) => {
+        event.preventDefault();
+
+        const afterTile = this.getDragAfterElement(
+          this.tilesColumns,
+          event.clientY,
+        );
+        const itemDraggable = document.querySelector('.dragging');
+        if (afterTile == null) {
+          this.tilesColumns.appendChild(itemDraggable);
+        } else {
+          this.tilesColumns.insertBefore(itemDraggable, afterTile);
+        }
+      });
+    });
+  }
+
+  getDragAfterElement(container, y) {
+    const draggableElements = [
+      ...container.querySelectorAll('.draggable:not(.dragging)'),
+    ];
+    return draggableElements.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      },
+      { offset: Number.NEGATIVE_INFINITY },
+    ).element;
   }
 
   save() {
@@ -163,145 +245,5 @@ export default class DndController {
         DndUi.createTile(this.done, item);
       });
     }
-  }
-
-  startDrag(event) {
-    const targetTile = event.target.closest('.tile');
-    if (!targetTile || event.target.classList.contains('delete-btn')) {
-      return;
-    }
-    event.preventDefault();
-
-    document.body.style.cursor = cursors.noDrag;
-    this.dndUi.addTiles.forEach((elem) => {
-      const tempElem = elem;
-      tempElem.style.cursor = cursors.noDrag;
-    });
-    this.dndUi.tiles.forEach((elem) => {
-      const tempElem = elem;
-      tempElem.style.cursor = cursors.drag;
-    });
-
-    this.dragEl = targetTile;
-    this.cloneEl = this.dragEl.cloneNode(true);
-    this.emptyEl = this.dragEl.cloneNode(true);
-    this.emptyEl.classList = '';
-    this.emptyEl.textContent = '';
-
-    this.shiftX = event.clientX - this.dragEl.getBoundingClientRect().left;
-    this.shiftY = event.clientY - this.dragEl.getBoundingClientRect().top;
-
-    this.cloneEl.style.width = `${this.dragEl.offsetWidth}px`;
-    this.cloneEl.style.height = `${this.dragEl.offsetHeight}px`;
-    this.emptyEl.style.width = `${this.dragEl.offsetWidth}px`;
-    this.emptyEl.style.height = `${this.dragEl.offsetHeight}px`;
-
-    this.cloneEl.classList.add('dragged');
-    this.dragEl.classList.add('hidden');
-    this.emptyEl.classList.add('empty-tile');
-    document.body.append(this.cloneEl);
-
-    this.cloneEl.style.left = `${event.clientX - this.shiftX}px`;
-    this.cloneEl.style.top = `${event.clientY - this.shiftY}px`;
-    this.emptyEl.style.left = `${event.clientX - this.shiftX}px`;
-    this.emptyEl.style.top = `${event.clientY - this.shiftY}px`;
-  }
-
-  moveAt(event) {
-    event.preventDefault();
-    if (!this.cloneEl) {
-      return;
-    }
-    const targetTile = event.target.closest('.tile');
-    if (!targetTile) {
-      return;
-    }
-    targetTile.parentNode.insertBefore(
-      this.emptyEl,
-      targetTile.nextElementSibling,
-    );
-
-    let newX = event.clientX - this.shiftX;
-    let newY = event.clientY - this.shiftY;
-
-    const newBottom = newY + this.cloneEl.offsetHeight;
-
-    if (newBottom > document.documentElement.clientHeight) {
-      const docBottom = document.documentElement.getBoundingClientRect().bottom;
-      let scrollY = Math.min(docBottom - newBottom, 10);
-
-      if (scrollY < 0) scrollY = 0;
-
-      window.scrollBy(0, scrollY);
-
-      newY = Math.min(
-        newY,
-        document.documentElement.clientHeight - this.cloneEl.offsetHeight,
-      );
-    }
-
-    if (newY < 0) {
-      let scrollY = Math.min(-newY, 10);
-      if (scrollY < 0) scrollY = 0;
-
-      window.scrollBy(0, -scrollY);
-
-      newY = Math.max(newY, 0);
-    }
-
-    if (newX < 0) newX = 0;
-    if (
-      newX
-      > document.documentElement.clientWidth - this.cloneEl.offsetWidth
-    ) {
-      newX = document.documentElement.clientWidth - this.cloneEl.offsetWidth;
-    }
-
-    this.cloneEl.style.left = `${newX}px`;
-    this.cloneEl.style.top = `${newY}px`;
-    this.emptyEl.style.left = `${newX}px`;
-    this.emptyEl.style.top = `${newY}px`;
-  }
-
-  finishDrag(event) {
-    if (!this.dragEl) {
-      return;
-    }
-    const targetPos = document.elementFromPoint(event.clientX, event.clientY);
-
-    if (!targetPos) {
-      this.endingDrag();
-      return;
-    }
-
-    const targetTiles = targetPos.closest('.tiles');
-
-    if (targetTiles === null) {
-      this.dragEl.parentElement.append(this.dragEl);
-    } else if (targetTiles && targetTiles === targetPos) {
-      targetTiles.append(this.dragEl);
-    } else if (targetTiles && targetTiles !== targetPos) {
-      const tile = targetPos.closest('.tile');
-      tile.after(this.dragEl);
-    }
-    this.endingDrag();
-  }
-
-  endingDrag() {
-    document.body.style.cursor = cursors.auto;
-    this.dndUi.addTiles.forEach((elem) => {
-      const tempElem = elem;
-      tempElem.style.cursor = '';
-    });
-    this.dndUi.tiles.forEach((elem) => {
-      const tempElem = elem;
-      tempElem.style.cursor = cursors.auto;
-    });
-    this.cloneEl.remove();
-    this.emptyEl.remove();
-    this.dragEl.classList.remove('hidden');
-    this.dragEl = null;
-    this.cloneEl = null;
-    this.emptyEl = null;
   }
 }

@@ -26,17 +26,10 @@ export default class DndUi {
       const tilesColEl = document.createElement('div');
       tilesColEl.id = `${item.id}`;
       tilesColEl.classList.add('tiles-col');
-      tilesColEl.innerHTML =
-        `<p class="tile-title">${item.title}</p>\n` +
-        '                   <div class="tiles"></div>\n' +
-        '                   <div class="add-tile">+ Add another card</div>\n' +
-        '                   <form class="new-tile-form">\n' +
-        '                     <input type="text" class="tile-input" placeholder="Enter a title for this card..." required>\n' +
-        '                     <div class="button-container">\n' +
-        '                       <button class="add-btn" type="submit">Add card</button>\n' +
-        '                       <button class="cancel-btn">&#10005;</button>\n' +
-        '                     </div>\n' +
-        '                   </form>\n';
+      tilesColEl.innerHTML = `<p class="tile-title">${item.title}</p>\n<div class="tiles"></div>\n<div class="add-tile">+ Add another card</div>\n
+        <form class="new-tile-form">\n<input type="text" class="tile-input" placeholder="Enter a title for this card..." required>\n
+        <div class="button-container">\n<button class="add-btn" type="submit">Add card</button>\n<button class="cancel-btn">&#10005;</button>\n
+        </div>\n</form>\n`;
       this.tilesContainerEl.append(tilesColEl);
     });
 
@@ -52,9 +45,7 @@ export default class DndUi {
     tile.classList.add('tile');
     tile.classList.add('draggable');
     tile.draggable = true;
-    tile.innerHTML =
-      `<div class="input-text">${value}</div>\n` +
-      '              <button class="delete-btn hidden">&#10005;</button>';
+    tile.innerHTML = `<div class="input-text">${value}</div>\n<button class="delete-btn hidden">&#10005;</button>`;
     column.append(tile);
   }
 

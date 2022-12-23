@@ -203,3 +203,54 @@ body {
 .dragover {
   opacity: 0.5;
 }
+
+/***********************************************************************/
+
+.box-container {
+  background-color: #333;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+/* Стили для боксов */
+.box {
+  /* width: 150px;
+  height: 150px; */
+  background-color: #eee;
+  /* margin-right: 100px; */
+  display: flex;
+}
+
+.box:last-child {
+  margin-right: 0;
+}
+
+/* Стили для перемещаемого элемента */
+.item {
+  padding: 1rem;
+  margin: 1rem;
+  background: white;
+  border: 1px solid black;
+  cursor: grabbing;
+}
+
+/* Меняем курсор при перетаскивании */
+.item:active {
+  cursor: grabbing;
+}
+
+/* При перетаскивания - меняем цвет */
+.item--hold {
+  background-color: blueviolet;
+  opacity: 0.5;
+}
+
+/* При наведении на бокс - желтая подсветка */
+.box--hovered {
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+/* Перетаскивании - скрываем элемент */
+.item--hide {
+  display: none;
+}

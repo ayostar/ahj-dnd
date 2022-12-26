@@ -155,7 +155,7 @@ body {
 }
 
 .delete-btn {
-  display: inline-block;
+  /* display: inline-block; */
   position: absolute;
   top: 3px;
   right: 3px;
@@ -165,6 +165,11 @@ body {
   background-color: #dee2e5;
   cursor: pointer;
   transition: color 0.3s ease-out;
+  display: none;
+}
+
+.tile:hover .delete-btn {
+  display: inline-block;
 }
 
 .cancel-btn:hover,
@@ -176,8 +181,12 @@ body {
   display: none;
 }
 
+.dragover {
+  opacity: 0.5;
+}
+
 .dragged {
-  position: absolute;
+  /* position: absolute; */
   z-index: 999;
   pointer-events: none;
 }
@@ -200,8 +209,8 @@ body {
   cursor: grabbing;
 }
 
-.dragover {
-  opacity: 0.5;
+.drag-clone-hover {
+  opacity: 0.3;
 }
 
 /***********************************************************************/
@@ -214,10 +223,10 @@ body {
 
 /* Стили для боксов */
 .box {
-  /* width: 150px;
-  height: 150px; */
+  width: 150px;
+  height: 150px;
   background-color: #eee;
-  /* margin-right: 100px; */
+  margin-right: 100px;
   display: flex;
 }
 

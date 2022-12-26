@@ -63,133 +63,61 @@ export default class DndController {
         const tilesCol = item.closest('.tiles-col');
         const column = tilesCol.children[1];
         DndUi.createTile(column, input.value);
-        // this.getTile();
-        // console.log(this.tile);
+
         item.reset();
         item.classList.remove('active');
       }),
     );
 
-    this.dndUi.tilesContainerEl.addEventListener('mouseover', (event) => {
-      event.preventDefault();
-
-      const tile = event.target.classList.contains('tile');
-      if (!tile) {
-        return;
-      }
-      const tileEl = event.target;
-      const delBtn = tileEl.querySelector('.delete-btn');
-      delBtn.classList.remove('hidden');
-    });
-
-    this.dndUi.tilesContainerEl.addEventListener('mouseout', (event) => {
-      event.preventDefault();
-
-      const tile = event.target.classList.contains('tile');
-      if (!tile) {
-        return;
-      }
-      const previousEl = event.target;
-      const currentEl = event.relatedTarget;
-      if (
-        !(
-          previousEl.classList.contains('tile') &&
-          currentEl.classList.contains('input-text')
-        ) &&
-        !(
-          previousEl.classList.contains('tile') &&
-          currentEl.classList.contains('delete-btn')
-        )
-      ) {
-        const tileEl = event.target;
-        const delBtn = tileEl.querySelector('.delete-btn');
-        delBtn.classList.add('hidden');
-      }
-    });
-
-    this.dndUi.tilesContainerEl.addEventListener('mousedown', (event) => {
+    this.dndUi.tilesContainerEl.addEventListener('click', (event) => {
       const targetTile = event.target;
-
-      // if (targetTile.closest('.tile')) {
-      //   this.startDrag(event);
-      // }
 
       if (targetTile.closest('.delete-btn')) {
         DndUi.deleteTile(targetTile);
       }
     });
-    this.startDrag();
+
+    this.dragStart();
   }
-  //// ================================================================================= ////
-  startDrag() {
-    // this.draggables = document.querySelectorAll('.draggable');
-    // this.container = document.querySelectorAll('.container');
-    // // console.log(this.container);
-    // // console.log(this.draggables);
-    // this.draggables.forEach((draggable) => {
-    //   draggable.addEventListener('dragstart', () => {
-    //     draggable.classList.add('dragging');
-    //   });
-    // });
+  dragStart() {
+    document.body.addEventListener('mousedown', (event) => {
+      console.log(event.target);
 
-    // this.draggables.forEach((draggable) => {
-    //   draggable.addEventListener('dragend', () => {
-    //     draggable.classList.remove('dragging');
-    //   });
-    // });
+      if (!event.target.classList.contains('draggable')) return;
 
-    // this.container.forEach((container) => {
-    //   container.addEventListener('dragover', (event) => {
-    //     event.preventDefault();
-    //     const afterElement = this.getDragAfterElement(container, event.clientY);
-    //     const draggable = document.querySelector('.dragging');
-    //     if (afterElement == null) {
-    //       container.appendChild(draggable);
-    //     } else {
-    //       container.insertBefore(draggable, afterElement);
-    //     }
-    //   });
-    // });
+      const tile = event.target;
 
-    console.log(this.tile);
-    setTimeout(() => {
-      this.tile = document.querySelectorAll('.tile');
-      console.log(this.tile);
+      tile.addEventListener('dragstart', () => {
+        tile.classList.add('dragging');
+      });
 
-      this.tile.forEach((tile) => {
-        tile.addEventListener('dragstart', () => {
-          tile.classList.add('dragging');
-        });
-        tile.addEventListener('dragend', () => {
-          tile.classList.remove('dragging');
-        });
+      tile.addEventListener('dragend', () => {
+        console.log('dragend');
+        tile.classList.remove('dragging');
+        tile.classList.remove('drag-clone-hover');
       });
 
       this.tilesColumns = document.querySelectorAll('.tiles');
 
-      function getDragAfterElement(container, y) {
-        const draggableElements = [
-          ...container.querySelectorAll('.draggable:not(.dragging)'),
-        ];
-        return draggableElements.reduce(
-          (closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-
-            if (offset < 0 && offset > closest.offset) {
-              return { offset: offset, element: child };
-            } else {
-              return closest;
-            }
-          },
-          { offset: Number.NEGATIVE_INFINITY },
-        ).element;
-      }
-
       this.tilesColumns.forEach((tileColumn) => {
-        tileColumn.addEventListener('dragover', (event) => {
+        tileColumn.addEventListener('dragenter', (event) => {
           event.preventDefault();
-          const afterTile = getDragAfterElement(tileColumn, event.clientY);
+          const itemDraggable = document.querySelector('.dragging');
+          itemDraggable.classList.add('drag-clone-hover');
+        });
+
+        tileColumn.addEventListener('dragleave', (event) => {
+          const itemDraggable = document.querySelector('.dragging');
+
+          console.log('dragleave');
+        });
+
+        tileColumn.addEventListener('dragover', (event) => {
+          console.log('dragover');
+
+          event.preventDefault();
+
+          const afterTile = this.getDragAfterElement(tileColumn, event.clientY);
           const itemDraggable = document.querySelector('.dragging');
           if (afterTile == null) {
             tileColumn.appendChild(itemDraggable);
@@ -198,54 +126,7 @@ export default class DndController {
           }
         });
       });
-    }, 100);
-
-    // this.tile.forEach((tile) => {
-    //   tile.addEventListener('dragstart', () => {
-    //     tile.classList.add('dragging');
-    //   });
-    //   tile.addEventListener('dragend', () => {
-    //     tile.classList.remove('dragging');
-    //   });
-    // });
-
-    // this.tilesColumns = document.querySelectorAll('.tiles');
-
-    // function getDragAfterElement(container, y) {
-    //   const draggableElements = [
-    //     ...container.querySelectorAll('.draggable:not(.dragging)'),
-    //   ];
-    //   return draggableElements.reduce(
-    //     (closest, child) => {
-    //       const box = child.getBoundingClientRect();
-    //       const offset = y - box.top - box.height / 2;
-
-    //       if (offset < 0 && offset > closest.offset) {
-    //         return { offset: offset, element: child };
-    //       } else {
-    //         return closest;
-    //       }
-    //     },
-    //     { offset: Number.NEGATIVE_INFINITY },
-    //   ).element;
-    // }
-
-    // this.tilesColumns.forEach((tileColumn) => {
-    //   tileColumn.addEventListener('dragover', (event) => {
-    //     event.preventDefault();
-    //     // const itemDraggable = document.querySelector('.dragging');
-    //     // console.log(tileColumn);
-    //     // tileColumn.appendChild(itemDraggable);
-
-    //     const afterTile = getDragAfterElement(tileColumn, event.clientY);
-    //     const itemDraggable = document.querySelector('.dragging');
-    //     if (afterTile == null) {
-    //       tileColumn.appendChild(itemDraggable);
-    //     } else {
-    //       tileColumn.insertBefore(itemDraggable, afterTile);
-    //     }
-    //   });
-    // });
+    });
   }
 
   getDragAfterElement(container, y) {
@@ -304,15 +185,5 @@ export default class DndController {
         DndUi.createTile(this.done, item);
       });
     }
-  }
-
-  async getTile() {
-    let promise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve((this.tile = document.querySelectorAll('.tile')));
-      }, 100);
-    });
-    this.tile = await promise;
-    return this.tile;
   }
 }

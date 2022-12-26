@@ -13,4 +13,4 @@ const todoMap = [
   },
 ];
 
-export default todoMap;
+export { todoMap };

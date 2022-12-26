@@ -45,7 +45,7 @@ export default class DndUi {
     tile.classList.add('tile');
     tile.classList.add('draggable');
     tile.draggable = true;
-    tile.innerHTML = `<div class="input-text">${value}</div>\n<button class="delete-btn hidden">&#10005;</button>`;
+    tile.innerHTML = `${value}\n<button class="delete-btn hidden">&#10005;</button>`;
     column.append(tile);
   }
 

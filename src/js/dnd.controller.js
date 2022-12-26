@@ -80,9 +80,18 @@ export default class DndController {
     this.dragStart();
   }
   dragStart() {
+    document.body.addEventListener('mouseover', (event) => {
+      if (event.target.classList.contains('draggable')) {
+        event.target.style.cursor = cursors.drag;
+      } else if (event.target.classList.contains('tiles-container')) {
+        event.target.style.cursor = cursors.noDrag;
+      }
+    });
+    // tile.addEventListener('mouseover', (event) => {
+    //   event.target.style.cursor = cursors.drag;
+    //   console.log(event);
+    // });
     document.body.addEventListener('mousedown', (event) => {
-      console.log(event.target);
-
       if (!event.target.classList.contains('draggable')) return;
 
       const tile = event.target;
@@ -92,7 +101,6 @@ export default class DndController {
       });
 
       tile.addEventListener('dragend', () => {
-        console.log('dragend');
         tile.classList.remove('dragging');
         tile.classList.remove('drag-clone-hover');
       });
@@ -100,20 +108,30 @@ export default class DndController {
       this.tilesColumns = document.querySelectorAll('.tiles');
 
       this.tilesColumns.forEach((tileColumn) => {
+        // tileColumn.addEventListener('mouseleave', (event) => {
+        //   event.target.style.cursor = cursors.noDrag;
+        //   console.log(event);
+        // });
+
+        // tileColumn.addEventListener('mouseenter', (event) => {
+        //   event.target.style.cursor = cursors.drag;
+        //   console.log(event);
+        // });
+
         tileColumn.addEventListener('dragenter', (event) => {
           event.preventDefault();
           const itemDraggable = document.querySelector('.dragging');
           itemDraggable.classList.add('drag-clone-hover');
+          event.target.style.cursor = cursors.drag;
         });
 
         tileColumn.addEventListener('dragleave', (event) => {
           const itemDraggable = document.querySelector('.dragging');
-
-          console.log('dragleave');
+          itemDraggable.style.cursor = cursors.noDrag;
         });
 
         tileColumn.addEventListener('dragover', (event) => {
-          console.log('dragover');
+          // event.target.style.cursor = cursors.drag;
 
           event.preventDefault();
 

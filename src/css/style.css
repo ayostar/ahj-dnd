@@ -206,7 +206,6 @@ body {
   padding: 1rem;
   background: white;
   border: 1px solid black;
-  cursor: grabbing;
 }
 
 .drag-clone-hover {

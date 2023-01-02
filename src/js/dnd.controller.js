@@ -19,6 +19,15 @@ export default class DndController {
         .querySelector('.tiles');
       this.done = document.getElementById('done').querySelector('.tiles');
       this.load();
+
+      // window.addEventListener('mousemove', (event) => {
+      //   console.log(event.target.style.cursor);
+      //   if (event.target.classList.contains('draggable')) {
+      //     event.target.style.cursor = cursors.drag;
+      //   } else if (event.target.classList.contains('tiles-container')) {
+      //     event.target.style.cursor = cursors.noDrag;
+      //   }
+      // });
     });
     window.addEventListener('unload', () => this.save());
 
@@ -82,66 +91,59 @@ export default class DndController {
   dragStart() {
     document.body.addEventListener('mouseover', (event) => {
       if (event.target.classList.contains('draggable')) {
-        event.target.style.cursor = cursors.drag;
-      } else if (event.target.classList.contains('tiles-container')) {
-        event.target.style.cursor = cursors.noDrag;
+        document.body.style.cursor = cursors.drag;
+      } else {
+        document.body.style.cursor = cursors.noDrag;
       }
     });
-    // tile.addEventListener('mouseover', (event) => {
-    //   event.target.style.cursor = cursors.drag;
-    //   console.log(event);
-    // });
+
     document.body.addEventListener('mousedown', (event) => {
       if (!event.target.classList.contains('draggable')) return;
 
       const tile = event.target;
 
-      tile.addEventListener('dragstart', () => {
+      tile.addEventListener('dragstart', (event) => {
         tile.classList.add('dragging');
+        document.body.style.cursor = cursors.drag;
+        console.log('dragstart ' + document.body.style.cursor);
       });
 
-      tile.addEventListener('dragend', () => {
+      tile.addEventListener('dragend', (event) => {
         tile.classList.remove('dragging');
         tile.classList.remove('drag-clone-hover');
+        console.log('dragend ' + document.body.style.cursor);
       });
 
       this.tilesColumns = document.querySelectorAll('.tiles');
 
       this.tilesColumns.forEach((tileColumn) => {
-        // tileColumn.addEventListener('mouseleave', (event) => {
-        //   event.target.style.cursor = cursors.noDrag;
-        //   console.log(event);
-        // });
-
-        // tileColumn.addEventListener('mouseenter', (event) => {
-        //   event.target.style.cursor = cursors.drag;
-        //   console.log(event);
-        // });
-
         tileColumn.addEventListener('dragenter', (event) => {
+          document.body.style.cursor = cursors.drag;
           event.preventDefault();
           const itemDraggable = document.querySelector('.dragging');
           itemDraggable.classList.add('drag-clone-hover');
-          event.target.style.cursor = cursors.drag;
+          console.log('dragenter ' + document.body.style.cursor);
         });
 
         tileColumn.addEventListener('dragleave', (event) => {
-          const itemDraggable = document.querySelector('.dragging');
-          itemDraggable.style.cursor = cursors.noDrag;
+          document.body.style.cursor = cursors.noDrag;
+          console.log('dragleave ' + document.body.style.cursor);
         });
 
         tileColumn.addEventListener('dragover', (event) => {
-          // event.target.style.cursor = cursors.drag;
-
           event.preventDefault();
+          document.body.style.cursor = cursors.drag;
 
           const afterTile = this.getDragAfterElement(tileColumn, event.clientY);
           const itemDraggable = document.querySelector('.dragging');
+
           if (afterTile == null) {
             tileColumn.appendChild(itemDraggable);
           } else {
             tileColumn.insertBefore(itemDraggable, afterTile);
           }
+
+          console.log('dragover ' + document.body.style.cursor);
         });
       });
     });

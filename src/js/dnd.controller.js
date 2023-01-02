@@ -44,8 +44,7 @@ export default class DndController {
           }
         }
 
-        const target =
-          event.target.parentElement.querySelector('.new-tile-form');
+        const target = event.target.parentElement.querySelector('.new-tile-form');
         target.classList.add('active');
         target.scrollIntoView(false);
       });
@@ -64,19 +63,17 @@ export default class DndController {
       });
     });
 
-    this.dndUi.forms.forEach((item) =>
-      item.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const input = [...item.elements][0];
-        input.focus();
-        const tilesCol = item.closest('.tiles-col');
-        const column = tilesCol.children[1];
-        DndUi.createTile(column, input.value);
+    this.dndUi.forms.forEach((item) => item.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const input = [...item.elements][0];
+      input.focus();
+      const tilesCol = item.closest('.tiles-col');
+      const column = tilesCol.children[1];
+      DndUi.createTile(column, input.value);
 
-        item.reset();
-        item.classList.remove('active');
-      }),
-    );
+      item.reset();
+      item.classList.remove('active');
+    }));
 
     this.dndUi.tilesContainerEl.addEventListener('click', (event) => {
       const targetTile = event.target;
@@ -88,6 +85,7 @@ export default class DndController {
 
     this.dragStart();
   }
+
   dragStart() {
     document.body.addEventListener('mouseover', (event) => {
       if (event.target.classList.contains('draggable')) {
@@ -102,36 +100,36 @@ export default class DndController {
 
       const tile = event.target;
 
-      tile.addEventListener('dragstart', (event) => {
+      tile.addEventListener('dragstart', () => {
         tile.classList.add('dragging');
         document.body.style.cursor = cursors.drag;
-        console.log('dragstart ' + document.body.style.cursor);
+        console.log(`dragstart ${document.body.style.cursor}`);
       });
 
-      tile.addEventListener('dragend', (event) => {
+      tile.addEventListener('dragend', () => {
         tile.classList.remove('dragging');
         tile.classList.remove('drag-clone-hover');
-        console.log('dragend ' + document.body.style.cursor);
+        console.log(`dragend ${document.body.style.cursor}`);
       });
 
       this.tilesColumns = document.querySelectorAll('.tiles');
 
       this.tilesColumns.forEach((tileColumn) => {
-        tileColumn.addEventListener('dragenter', (event) => {
+        tileColumn.addEventListener('dragenter', (dragenterEvent) => {
           document.body.style.cursor = cursors.drag;
-          event.preventDefault();
+          dragenterEvent.preventDefault();
           const itemDraggable = document.querySelector('.dragging');
           itemDraggable.classList.add('drag-clone-hover');
-          console.log('dragenter ' + document.body.style.cursor);
+          console.log(`dragenter ${document.body.style.cursor}`);
         });
 
-        tileColumn.addEventListener('dragleave', (event) => {
+        tileColumn.addEventListener('dragleave', () => {
           document.body.style.cursor = cursors.noDrag;
-          console.log('dragleave ' + document.body.style.cursor);
+          console.log(`dragleave ${document.body.style.cursor}`);
         });
 
-        tileColumn.addEventListener('dragover', (event) => {
-          event.preventDefault();
+        tileColumn.addEventListener('dragover', (dragoverEvent) => {
+          dragoverEvent.preventDefault();
           document.body.style.cursor = cursors.drag;
 
           const afterTile = this.getDragAfterElement(tileColumn, event.clientY);
@@ -143,12 +141,12 @@ export default class DndController {
             tileColumn.insertBefore(itemDraggable, afterTile);
           }
 
-          console.log('dragover ' + document.body.style.cursor);
+          console.log(`dragover ${document.body.style.cursor}`);
         });
       });
     });
   }
-
+  /* eslint-disable */
   getDragAfterElement(container, y) {
     const draggableElements = [
       ...container.querySelectorAll('.draggable:not(.dragging)'),
@@ -159,14 +157,14 @@ export default class DndController {
         const offset = y - box.top - box.height / 2;
 
         if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
+          return { offset, element: child };
         }
+        return closest;
       },
       { offset: Number.NEGATIVE_INFINITY },
     ).element;
   }
+  /* eslint-enable */
 
   save() {
     const data = {

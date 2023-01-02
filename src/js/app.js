@@ -1,5 +1,5 @@
 import DndUi from './dnd.ui';
-import { todoMap } from './utils';
+import todoMap from './utils';
 import StateService from './state.service';
 import DndController from './dnd.controller';
 

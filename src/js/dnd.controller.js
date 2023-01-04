@@ -89,7 +89,7 @@ export default class DndController {
   dragStart() {
     document.body.addEventListener('mouseover', (event) => {
       if (event.target.classList.contains('draggable')) {
-        document.body.style.cursor = cursors.drag;
+        document.body.style.cursor = cursors.auto;
       } else {
         document.body.style.cursor = cursors.noDrag;
       }
@@ -109,6 +109,7 @@ export default class DndController {
       tile.addEventListener('dragend', () => {
         tile.classList.remove('dragging');
         tile.classList.remove('drag-clone-hover');
+        document.body.style.cursor = cursors.auto;
         console.log(`dragend ${document.body.style.cursor}`);
       });
 

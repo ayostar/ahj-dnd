@@ -1,5 +1,4 @@
 import DndUi from './dnd.ui';
-import cursors from './cursors';
 
 export default class DndController {
   constructor(dndUi, stateService) {
@@ -19,15 +18,6 @@ export default class DndController {
         .querySelector('.tiles');
       this.done = document.getElementById('done').querySelector('.tiles');
       this.load();
-
-      // window.addEventListener('mousemove', (event) => {
-      //   console.log(event.target.style.cursor);
-      //   if (event.target.classList.contains('draggable')) {
-      //     event.target.style.cursor = cursors.drag;
-      //   } else if (event.target.classList.contains('tiles-container')) {
-      //     event.target.style.cursor = cursors.noDrag;
-      //   }
-      // });
     });
     window.addEventListener('unload', () => this.save());
 
@@ -87,14 +77,6 @@ export default class DndController {
   }
 
   dragStart() {
-    document.body.addEventListener('mouseover', (event) => {
-      if (event.target.classList.contains('draggable')) {
-        document.body.style.cursor = cursors.auto;
-      } else {
-        document.body.style.cursor = cursors.noDrag;
-      }
-    });
-
     document.body.addEventListener('mousedown', (e) => {
       if (!e.target.classList.contains('draggable')) return;
 
@@ -102,14 +84,12 @@ export default class DndController {
 
       tile.addEventListener('dragstart', () => {
         tile.classList.add('dragging');
-        document.body.style.cursor = cursors.drag;
         console.log(`dragstart ${document.body.style.cursor}`);
       });
 
       tile.addEventListener('dragend', () => {
         tile.classList.remove('dragging');
         tile.classList.remove('drag-clone-hover');
-        document.body.style.cursor = cursors.auto;
         console.log(`dragend ${document.body.style.cursor}`);
       });
 
@@ -117,7 +97,6 @@ export default class DndController {
 
       this.tilesColumns.forEach((tileColumn) => {
         tileColumn.addEventListener('dragenter', (event) => {
-          document.body.style.cursor = cursors.drag;
           event.preventDefault();
           const itemDraggable = document.querySelector('.dragging');
           itemDraggable.classList.add('drag-clone-hover');
@@ -125,13 +104,11 @@ export default class DndController {
         });
 
         tileColumn.addEventListener('dragleave', () => {
-          document.body.style.cursor = cursors.noDrag;
           console.log(`dragleave ${document.body.style.cursor}`);
         });
 
         tileColumn.addEventListener('dragover', (event) => {
           event.preventDefault();
-          document.body.style.cursor = cursors.drag;
 
           const afterTile = this.getDragAfterElement(tileColumn, event.clientY);
           const itemDraggable = document.querySelector('.dragging');
